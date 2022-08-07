@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, {useReducer, useEffect} from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Menu from './Menu'
+import {reducer, initialState} from './reducer'
 
 
 const tableno = [
@@ -21,11 +22,16 @@ const tableno = [
     {
         id: "5"
     },
-
-
 ]
-export default function TableOrder() {
 
+
+export default function TableOrder({route}) {
+    const [state, dispatch] = useReducer(reducer, initialState)
+    useEffect(()=>{
+        if(route?.params){
+            dispatch({ type: "CLEAN_TABLE", payload:{ tableNo: route?.params?.tableNum }})
+        }
+    },[route])
     const navigation = useNavigation();
     const Table = (props) => {
         return (

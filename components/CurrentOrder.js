@@ -6,20 +6,13 @@ import {reducer, initialState} from './reducer'
 
 const CurrentOrder = (props) => {
     const [state, dispatch] = useReducer(reducer, initialState)
-
-    // useEffect(()=>{
-    //     console.log("====current order=====",state.tableOrder)
-    // }, [props.renderClick])
+    useEffect(()=>{
+        console.log("====current order=====",state.tableOrder)
+    }, [props.renderClick, state])
     return (
         <View style={{ backgroundColor: "#ECECEC", height: "60%", borderRadius: 30, padding: 10, marginTop: 25,}}>
             <View >
-                {state.tableOrder.find((item)=>(item.tableNo==props.tablenum))?.items.map((item)=><CurrentOrderCard item={item}/>)}
-                {/* <CurrentOrderCard /> */}
-                {/* <View style={{ justifyContent: "flex-end", }}>
-                    <Text>Total:</Text>
-                    <Text>VAT:</Text>
-                    <Text>Grand Total:</Text>
-                </View> */}
+                {state.tableOrder.find((item)=>(item.tableNo==props.tablenum))?.items.map((item)=><CurrentOrderCard item={item} tablenum={props.tablenum}/>)}
             </View>
         </View>
     )

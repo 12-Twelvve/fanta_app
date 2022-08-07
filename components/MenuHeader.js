@@ -1,27 +1,11 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native'
-import { SearchBar } from 'react-native-elements';
 import React,{useState} from 'react'
 
 const MenuHeader = () => {
     const [searchItem, setSearchItem]=useState("");
     return (
         <View style={styles.container}>
-            <Text style={{ fontSize: 20, color: "#F27405", alignSelf: 'center', }}>Menu</Text>
-            {/* <SearchBar
-                placeholder="Search Items.."
-                containerStyle={{ flex: 1 }}
-                lightTheme
-            /> */}
-            <TextInput
-                style={styles.input}
-                //onChangeText={onChangeNumber}
-                //value={number}
-                placeholder="Search Items.."
-                keyboardType="default"
-                onChange={(event)=>{
-                    setSearchItem(event.target.value);
-                  }}
-            />
+            <Text style={{ fontSize: 20, color: "#F27405", alignSelf: 'center', }}>Items</Text>
         </View>
     )
 }

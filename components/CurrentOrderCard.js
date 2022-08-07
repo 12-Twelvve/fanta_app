@@ -1,16 +1,36 @@
 import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, {useReducer} from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {reducer, initialState} from './reducer'
 
 
-export default function CurrentOrderCard({item}) {
+export default function CurrentOrderCard({item, tablenum}) {
+    const [state, dispatch] = useReducer(reducer, initialState)
+
+    const handleCancel =()=>{
+        console.log(state.tableOrder)
+        let temptableOrder = state.tableOrder.find(it =>it.tableNo ==tablenum)
+        let temptableList = temptableOrder?.items.filter(it=>it.title != item.title)            
+        const temp = {...state,tableOrder:state.tableOrder.map(it=>{
+            if(it.tableNo==tablenum){
+                return {tableNo:tablenum, items:temptableList}
+            }else{
+                return it
+            }})}
+        console.log(state.tableOrder[0].items, temp.tableOrder[0].items)
+        dispatch({ type: "REMOVE_ORDER_ITEM", payload:{data:temp }})
+    }
+
     return (
         <View style={styles.menuItemStyle}>
             <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
                 <Text style={styles.titleStyle}>
                     {item.title}
                 </Text>
-                <TouchableOpacity style={{ marginLeft: 40 }}>
+                <TouchableOpacity 
+                    style={{ marginLeft: 40 }}
+                    onPress={handleCancel}
+                    >
                     <MaterialIcons name="cancel" size={20} color="red" />
                 </TouchableOpacity>
             </View>

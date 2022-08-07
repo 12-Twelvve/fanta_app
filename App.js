@@ -8,6 +8,7 @@ import OrderTrack from './components/OrderTrack'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Menu from './components/Menu'
+import Stock from './components/Stock'
 
 // import store from './redux/store'
 // import { Provider } from 'react-redux'
@@ -32,7 +33,7 @@ export default function App() {
         <Stack.Screen name="Table" component={TableOrder} options={{ headerShown: false }} />
         <Stack.Screen name="Track" component={OrderTrack} options={{ headerShown: false }} />
         <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-        
+        <Stack.Screen name="Stock" component={Stock} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   )
