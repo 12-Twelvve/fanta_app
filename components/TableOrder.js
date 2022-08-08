@@ -2,9 +2,8 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, {useReducer, useEffect} from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Menu from './Menu'
-import {reducer, initialState} from './reducer'
-
+// import Menu from './Menu'
+import { useSelector } from 'react-redux';
 
 const tableno = [
     {
@@ -25,19 +24,15 @@ const tableno = [
 ]
 
 
-export default function TableOrder({route}) {
-    const [state, dispatch] = useReducer(reducer, initialState)
-    useEffect(()=>{
-        if(route?.params){
-            dispatch({ type: "CLEAN_TABLE", payload:{ tableNo: route?.params?.tableNum }})
-        }
-    },[route])
+export default function TableOrder() {
+    const data = useSelector((state)=>state.table_order)
     const navigation = useNavigation();
     const Table = (props) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('Menu', { num: props.no })}>
-                <View style={{ backgroundColor: "#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, }}>
-                    <Text style={{ color: "white", fontSize: 20 }}>Table No. {props.no}</Text>
+            <TouchableOpacity key={props.no} onPress={() => navigation.navigate('Menu', { num: props.no })}>
+                <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"green", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
+                    <View style={{ width: 50, height: 50, backgroundColor:'white', position:'absolute'}}></View>
+                    <Text style={{ color: "white", fontSize: 20, fontWeight:"bold" }}>Table No. {props.no}</Text>
                 </View>
             </TouchableOpacity>
         )

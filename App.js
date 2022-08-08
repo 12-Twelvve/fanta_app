@@ -10,9 +10,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Menu from './components/Menu'
 import Stock from './components/Stock'
 
-// import store from './redux/store'
-// import { Provider } from 'react-redux'
-// import {reducer, initialState} from './components/reducer'
+// redux
+import { Provider } from 'react-redux'
+import store from './components/redux/store'
 
 // import { createContext } from 'react'
 
@@ -23,18 +23,19 @@ export default function App() {
   // const MyContext = React.createContext();
 
   return (
-    <NavigationContainer >
-      <Stack.Navigator >
-
-        {/* <Stack.Screen name="BottomTab" component={BottomTab} options={{ headerShown: false }} /> */}
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Packaging" component={Packaging} options={{ headerShown: false }} />
-        <Stack.Screen name="Online" component={OnlineOrder} options={{ headerShown: false }} />
-        <Stack.Screen name="Table" component={TableOrder} options={{ headerShown: false }} />
-        <Stack.Screen name="Track" component={OrderTrack} options={{ headerShown: false }} />
-        <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
-        <Stack.Screen name="Stock" component={Stock} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer >
+        <Stack.Navigator >
+          {/* <Stack.Screen name="BottomTab" component={BottomTab} options={{ headerShown: false }} /> */}
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Packaging" component={Packaging} options={{ headerShown: false }} />
+          <Stack.Screen name="Online" component={OnlineOrder} options={{ headerShown: false }} />
+          <Stack.Screen name="Table" component={TableOrder} options={{ headerShown: false }} />
+          <Stack.Screen name="Track" component={OrderTrack} options={{ headerShown: false }} />
+          <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+          <Stack.Screen name="Stock" component={Stock} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   )
 }

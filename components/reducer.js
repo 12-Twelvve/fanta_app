@@ -12,8 +12,14 @@ export const reducer = (state = initialState, action) => {
             if(checkList){
                 newState.tableOrder.forEach((item)=>{
                     if (item.tableNo == action.payload.tableNo){
-                        item.items.push(action.payload.data)
-                    }
+                        // if that item is already there
+                        if (item.items.find(ele=>ele.title ==action.payload.data.title)){
+                            item.items.forEach(ele=>ele.title ==action.payload.data.title?ele.quantity+=1:ele)
+                        }
+                        else{
+                            item.items.push(action.payload.data)
+                        }
+                }
                 })
             }
             else{

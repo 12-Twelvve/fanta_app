@@ -1,17 +1,42 @@
 import { View, Text, Modal, Pressable, TouchableOpacity, StyleSheet } from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { RadioButton } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+// localstorage
+import storage from './Storage';
 
 const branches = ['DurbarMarg', "kumaripati", "Baneshwor"]
 
-const BranchSelectorModal = () => {
-    const [checked, setChecked] = React.useState('Durbarmarg'); //initial choice
+const BranchSelectorModal = ({selectbranch,setSelectBranch}) => {
+    // const [checked, setChecked] = useState('Durbarmarg'); //initial choice
     const [modalVisible, setModalVisible] = useState(false);
-
     const toggleBranch =()=>{
         setModalVisible(false)
+        // save to localStorage
+        storage.save({
+          key:'branch',
+          data:selectbranch,
+          expires:null,
+        })
     }
+    const getBranch =()=>{
+      storage.load({
+        key: 'branch',
+        autoSync: true,
+        syncInBackground: true,
+      })
+      .then(ret => {
+        // success
+        console.log(ret)
+        setSelectBranch(ret)
+      })
+      .catch(err => {
+        console.warn(err.message);
+      });
+    }
+    useEffect(()=>{
+      getBranch()
+    },[])
   return (
     <View>
       <Modal
@@ -34,16 +59,16 @@ const BranchSelectorModal = () => {
             <View style={{flexDirection:'row',}}>
             <RadioButton
                 value="Durbarmarg" 
-                status={ checked === 'Durbarmarg' ? 'checked' : 'unchecked' } 
-                onPress={() => setChecked('Durbarmarg')} 
+                status={ selectbranch === 'Durbarmarg' ? 'checked' : 'unchecked' } 
+                onPress={() => setSelectBranch('Durbarmarg')} 
                 />
             <Text style={styles.textStyle}>DurbarMarg</Text>
             </View>
             <View style={{flexDirection:'row'}}>
             <RadioButton
                 value="Kumaripati"
-                status={ checked === 'Kumaripati' ? 'checked' : 'unchecked' }
-                onPress={() => setChecked('Kumaripati')}
+                status={ selectbranch === 'Kumaripati' ? 'checked' : 'unchecked' }
+                onPress={() => setSelectBranch('Kumaripati')}
                 /><Text style={styles.textStyle}>Kumaripati</Text>
             </View>
             </View>

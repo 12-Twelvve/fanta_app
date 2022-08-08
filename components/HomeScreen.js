@@ -3,24 +3,38 @@ import { Card, ListItem, Button } from 'react-native-elements'
 import React, { useEffect, useReducer, useState } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 import BranchSelectorModal from './BranchSelectorModal';
+import storage from './Storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const branches =[ 
-{label: 'DurbarMarg', value: 'durbarmarg'},
-{label: 'Kumaripati', value: 'kumaripati'},
-{label: 'Baneshwor', value: 'baneshwor'},
-]
 
 const HomeScreen = ({route, navigation }) => {
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
     const [selectbranch, setSelectBranch] = useState('durbarmarg');
-  
+    const getBranch =()=>{
+        storage.load({
+            key: 'branch',
+            autoSync: true,
+            syncInBackground: true,
+          })
+          .then(ret => {
+            // success
+            // console.log(ret)
+            setSelectBranch(ret)
+          })
+          .catch(err => {
+            console.warn(err.message);
+          });
+      }
+      useEffect(()=>{
+        getBranch();
+      },[])
   
     return (
         <View>
             <Text style={{ alignSelf: "center", fontSize: 30, color: "#F27405" }}>Sinka</Text>
             {/* setting */}
             <View>
-                <BranchSelectorModal/>
+                <BranchSelectorModal selectbranch={selectbranch} setSelectBranch={setSelectBranch}/>
             </View>
             <View style={styles.container}>
                 {/* ....cards... */}
@@ -42,23 +56,6 @@ const HomeScreen = ({route, navigation }) => {
                                 navigation.navigate('Table')
                             }
                         />
-                    </Card>
-                    <Card>
-                        <Text style={styles.title}>Packaging</Text>
-                        <Image
-                            source={require('../assests/sinka_logo.jpg')}
-                            style={{ width: 250, height: 200 }}
-                        />
-                        <Text style={{ marginBottom: 10 }}>
-                            Packaging.... no need
-                        </Text>
-                        <Button
-                            //icon={<Icon name='code' color='#ffffff' />}
-                            buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, backgroundColor: "#F27405" }}
-                            title='VIEW NOW'
-                            onPress={() =>
-                                navigation.navigate('Packaging')
-                            } />
                     </Card>
                     <Card>
                         <Text style={styles.title}>Online Order</Text>
@@ -84,8 +81,7 @@ const HomeScreen = ({route, navigation }) => {
                             style={{ width: 250, height: 200 }}
                         />
                         <Text style={{ marginBottom: 10 }}>
-                            specific branch name
-
+                            {selectbranch}
                         </Text>
                         <Button
                             //icon={<Icon name='code' color='#ffffff' />}

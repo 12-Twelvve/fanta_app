@@ -7,7 +7,7 @@ import MenuHeader from './MenuHeader';
 // import MomoItems from './MomoItems';
 import ItemCard from './ItemCard';
 import { Data } from '../menuitems';
-import { DATA } from './MenuCategory'
+// import { DATA } from './MenuCategory'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -51,7 +51,7 @@ const Menu = ({route}) => {
     const [selectedMenu, setSelectedMenu] = useState([])
     const [renderClick, setRenderClick] = useState(false)
     const navigation = useNavigation();
-
+    const getMenu =()=>{}
     const checkList = (dl) => {
         // console.log(menuSelection, dl.id, "=")
         return dl.id == menuSelection
@@ -99,11 +99,13 @@ const Menu = ({route}) => {
             </View>
             {/* Current Order Section RIGHT */}
             <View style={styles.currentorder} >
-                <View>
+                <View style={{flex:1}}>
                     <Text style={{ color: "black", fontSize: 30, alignSelf: "center", marginTop: 15 }}>CurrentOrder</Text>
                 </View>
+                <View style={{flex:10}}>
                 <CurrentOrder renderClick={renderClick} tablenum ={route.params.num}  />
-                <View>
+                </View>
+                <View style={{flex:1}} >
                     <Button
                         title="Submit Order"
                         buttonStyle={{
@@ -124,6 +126,7 @@ const styles = StyleSheet.create({
         //display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        flex:1,
     },
     category: {
         justifyContent: "flex-start",
@@ -144,7 +147,8 @@ const styles = StyleSheet.create({
         //justifyContent: "flex-end",
         backgroundColor: "white",
         width: "25%",
-        height: "auto",
+        flex:1,
+        // height: "auto",
         //justifyContent:"space-between",
     }
 

@@ -71,14 +71,14 @@ const DATA = [
 }
 export default function Stock() {
     const navigation = useNavigation();
-    const [actualValue, setactualValue] = useState({});
+    // const [actualValue, setactualValue] = useState({});
     const [stock, setStock] = useState(DATA)
     const handlesubmit =()=>{
         // submit post data -->
     }
     const fectgData =()=>{}
     useEffect(()=>{})
-    
+
     return (
         <>
             {/* Headbar with back and home button */}

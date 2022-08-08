@@ -4,69 +4,68 @@ import { Checkbox } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button, CheckBox } from 'react-native-elements'
-import {reducer, initialState} from './reducer'
-
-
-
+// import {reducer, initialState} from './reducer'
+import { useSelector, useDispatch } from 'react-redux';
+import { cleanTable, updateServedItem } from './redux/tableOrderSlice';
 
 export default function OrderTrack({route}) {
     const [modalVisible, setModalVisible] = useState(false);
-    const [state, dispatch] = useReducer(reducer, initialState)
-    
+    const dispatch = useDispatch()
+    const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.items)
     const navigation = useNavigation();
+    // checkbox
     const [allserveCheckBox, setallserveCheckBox] = useState(false)
-    // const [checked, setChecked] = useState(false);
-    // const [serveCheckBox, setserveCheckBox] = useState(new Array(state.tableOrder.find(it =>it.tableNo == route.params.num).items.length).fill(false))
     const [serveCheckBox, setserveCheckBox] = useState([])
-    const [orderItems, setorderItems] = useState([])
-    const getTotalPrice =()=>{
+    
+    const getTotalPrice =()=>{  
         let total =0
-        orderItems?.map((it)=>{
-            total +=Number(it.price)
+        orders?.map((it)=>{
+            total +=Number(it.price)*Number(it.quantity)
         })
         return total
     }
     const toggleCheckbox= (i)=>{
         let tmp = !serveCheckBox[i]
         setserveCheckBox(serveCheckBox.fill(tmp, i, i+1))
-        // update served
-        dispatch({ type: "UPDATE_SERVED_ITEM", payload:{data:{index:i }, tableNo: route.params.num }});
-        // console.log(serveCheckBox)
+        dispatch(updateServedItem({index:i, value:tmp, tableNo:route.params.num}))
     }
     const toggleAllCheckbox =()=>{
         if(allserveCheckBox){
             setserveCheckBox(serveCheckBox.fill(false))
             setallserveCheckBox(false)
+            serveCheckBox.map((v, i)=>{
+                dispatch(updateServedItem({index:i, value:v, tableNo:route.params.num}))  
+            })
         }else{
             setallserveCheckBox(serveCheckBox.fill(true))
             setallserveCheckBox(true)
+            serveCheckBox.map((v, i)=>{
+                dispatch(updateServedItem({index:i, value:v, tableNo:route.params.num}))  
+            })
         }
     }
     const handleCheckout =()=>{
         // clean the table
-        // console.log('checkout called ------------')
-        // dispatch({ type: "CLEAN_TABLE", payload:{ tableNo: route.params.num }})
-        setModalVisible(!modalVisible)
-        // console.log("==")
-        // handleNavigateToHome()
-        navigation.navigate('Table', {tableNum:route.params.num})
-
+        if(allserveCheckBox){
+            setModalVisible(!modalVisible)
+            dispatch(cleanTable({tableNo:route.params.num}))
+            navigation.navigate('Table', {tableNum:route.params.num})
+        }
     }
     useEffect(()=>{
-        setorderItems(state?.tableOrder?.find(it =>it?.tableNo == route.params.num)?.items);
-        orderItems?.forEach((_, i)=>{
+        console.log('caleed')
+        orders?.forEach((_, i)=>{
             serveCheckBox[i] = _.served
         });
-        
         if (!serveCheckBox?.includes(false)) {
             setallserveCheckBox(true);
         }
         else{
             setallserveCheckBox(false);
         }
-    },[state, orderItems, serveCheckBox] )
+    }, [orders, serveCheckBox])
+
     const item = ({ item , index}) => {
-        // console.log(item, index)
         return (
             <View style={{ flexDirection: "row"}}>
                 <View style={{ width: "10%", alignItems: "center" }}>
@@ -112,7 +111,6 @@ export default function OrderTrack({route}) {
             </View>
             {/* --------------------------------------------------------------------------------- */}
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center", margin: 30, }}>
-            
                 <Text style={{ alignSelf: "center",fontSize:30 }}>Order Track</Text>
                 <View style={{ flexDirection: "row", }}>
                     <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", }}>
@@ -139,7 +137,7 @@ export default function OrderTrack({route}) {
                 </View>
                 {/* <View style={{ height: 300 }}></View> */}
                 <FlatList
-                    data={orderItems}
+                    data={orders}
                     renderItem={item}
                     keyExtractor={(item, index) => index.toString()}
                 />
@@ -175,6 +173,7 @@ export default function OrderTrack({route}) {
                         <Text>VAT: 13%</Text>
                         <Text>Grand Total:<Text style={styles.modalText}>{getTotalPrice()}</Text></Text>
                         </View>
+                        {allserveCheckBox?<Text></Text>:<Text style={styles.warningText}>Not All food are Served</Text>}
                         <Pressable
                         style={[styles.button, styles.buttonClose]}
                         onPress={handleCheckout}
@@ -257,6 +256,12 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
       marginBottom: 25,
       textAlign: "center",
-    }
+    },
+    warningText: {
+        fontWeight: "bold",
+        marginBottom: 25,
+        textAlign: "center",
+        color:"red"
+      }
   });
   
