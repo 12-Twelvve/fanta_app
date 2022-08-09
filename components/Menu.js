@@ -4,10 +4,8 @@ import React, { useEffect, useState } from 'react'
 import MenuCategory from './MenuCategory';
 import CurrentOrder from './CurrentOrder'
 import MenuHeader from './MenuHeader';
-// import MomoItems from './MomoItems';
 import ItemCard from './ItemCard';
 import { Data } from '../menuitems';
-// import { DATA } from './MenuCategory'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -51,13 +49,11 @@ const Menu = ({route}) => {
     const [selectedMenu, setSelectedMenu] = useState([])
     const [renderClick, setRenderClick] = useState(false)
     const navigation = useNavigation();
-    const getMenu =()=>{}
+    // const getMenu =()=>{}
     const checkList = (dl) => {
-        // console.log(menuSelection, dl.id, "=")
         return dl.id == menuSelection
     }
     const selectMenu = () => {
-        // console.log(Data)
         let tempselectedItem = Data.find(checkList)
         setSelectedMenu(tempselectedItem?.menulist)
     }
@@ -66,7 +62,6 @@ const Menu = ({route}) => {
     })
     return (
         <View style={styles.container}>
-            {/* Menu Category Section LEFT */}
             <View style={styles.category}>
                 <View style={{ flexDirection: "row", justifyContent: "space-around",marginTop:20 }}>
                     <TouchableOpacity
@@ -79,7 +74,7 @@ const Menu = ({route}) => {
                     >
                         <MaterialIcons name="home" color="#F27405" size={30} />
                     </TouchableOpacity>
-                    <Text style={{fontWeight:'bold'}}>Table no. {route.params.num}</Text>
+                    <Text style={{fontWeight:'bold'}}>Table:<Text style={{color:'orange', fontSize:18}}> {route.params.num}</Text></Text>
                 </View>
                 <MenuCategory setMenuSelection={setMenuSelection} />
             </View>

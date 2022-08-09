@@ -1,14 +1,11 @@
 import { View, Text, Image, StyleSheet } from 'react-native'
-import { Card, ListItem, Button } from 'react-native-elements'
-import React, { useEffect, useReducer, useState } from 'react'
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Card, Button } from 'react-native-elements'
+import React, { useEffect, useState } from 'react'
 import BranchSelectorModal from './BranchSelectorModal';
 import storage from './Storage';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const HomeScreen = ({route, navigation }) => {
-    // const [open, setOpen] = useState(false);
     const [selectbranch, setSelectBranch] = useState('durbarmarg');
     const getBranch =()=>{
         storage.load({

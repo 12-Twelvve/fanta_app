@@ -8,7 +8,6 @@ import storage from './Storage';
 const branches = ['DurbarMarg', "kumaripati", "Baneshwor"]
 
 const BranchSelectorModal = ({selectbranch,setSelectBranch}) => {
-    // const [checked, setChecked] = useState('Durbarmarg'); //initial choice
     const [modalVisible, setModalVisible] = useState(false);
     const toggleBranch =()=>{
         setModalVisible(false)

@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Menu from './Menu'
+
 const tableno = [
     {
         id: "Foodmandu"
@@ -28,11 +28,9 @@ export default function OnlineOrder() {
 
     const Table = (props) => {
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('Menu', { num: 1 })}>
-                <View style={{ backgroundColor: "#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, }}>
-
-                    <Text style={{ color: "white", fontSize: 20 }}>{props.no}</Text>
-
+            <TouchableOpacity onPress={() => navigation.navigate('Menu', { num: props.no })}>
+                <View style={{ backgroundColor: "#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
+                    <Text style={{ color: "white", fontSize: 20, fontWeight:'bold' }}>{props.no}</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -41,7 +39,7 @@ export default function OnlineOrder() {
 
     return (
         <>
-            <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%",marginTop:20 }}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                 >
@@ -54,7 +52,7 @@ export default function OnlineOrder() {
                 </TouchableOpacity>
             </View>
             <Text style={{ alignSelf: "center", fontSize: 30 }}>Online Order</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-evenly", }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-evenly",marginTop:20 }}>
 
                 {tableno.map((l) => {
                     return (

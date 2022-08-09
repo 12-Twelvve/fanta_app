@@ -1,5 +1,5 @@
-import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, {useReducer} from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import { removeTableOrderItem , decrementQuantity} from './redux/tableOrderSlice';
@@ -34,13 +34,7 @@ export default function CurrentOrderCard({item, tablenum}) {
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
                 <View style={{ flexDirection: "row" }}>
-                    {/* <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>-</Text>
-                    </TouchableOpacity> */}
                     <Text style={{width: 20, textAlign:'center', fontWeight: "bold" }}>{item.quantity}</Text>
-                    {/* <TextInput
-                        style={{ borderWidth: 0.5, width: 20, height: 20 }}
-                    /> */}
                     <TouchableOpacity
                      style={styles.button}
                      onPress={handleDecrease}

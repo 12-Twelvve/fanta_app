@@ -1,11 +1,10 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native'
-import React,{useState} from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import React from 'react'
 
 const MenuHeader = () => {
-    const [searchItem, setSearchItem]=useState("");
     return (
         <View style={styles.container}>
-            <Text style={{ fontSize: 20, color: "#F27405", alignSelf: 'center', }}>Items</Text>
+            <Text style={{ fontSize: 18, color: "#F27405", alignSelf: 'center', fontStyle:'italic' }}>Items</Text>
         </View>
     )
 }

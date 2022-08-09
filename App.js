@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import HomeScreen from './components/HomeScreen'
-import Packaging from './components/Packaging'
+// import Packaging from './components/Packaging'
 import TableOrder from './components/TableOrder'
 import OnlineOrder from './components/OnlineOrder'
 import OrderTrack from './components/OrderTrack'
@@ -14,21 +14,16 @@ import Stock from './components/Stock'
 import { Provider } from 'react-redux'
 import store from './components/redux/store'
 
-// import { createContext } from 'react'
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // const [state, dispatch] = useReducer(reducer, initialState)
-  // const MyContext = React.createContext();
-
   return (
     <Provider store={store}>
       <NavigationContainer >
         <Stack.Navigator >
           {/* <Stack.Screen name="BottomTab" component={BottomTab} options={{ headerShown: false }} /> */}
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Packaging" component={Packaging} options={{ headerShown: false }} />
+          {/* <Stack.Screen name="Packaging" component={Packaging} options={{ headerShown: false }} /> */}
           <Stack.Screen name="Online" component={OnlineOrder} options={{ headerShown: false }} />
           <Stack.Screen name="Table" component={TableOrder} options={{ headerShown: false }} />
           <Stack.Screen name="Track" component={OrderTrack} options={{ headerShown: false }} />

@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, {useReducer, useEffect} from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import Menu from './Menu'
 import { useSelector } from 'react-redux';
 
 const tableno = [

@@ -1,10 +1,9 @@
 import { View, Text, FlatList, TouchableOpacity,Modal, StyleSheet , Pressable} from 'react-native'
-import React, { useState, useReducer, useEffect } from 'react'
+import React, { useState,  useEffect } from 'react'
 import { Checkbox } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Button, CheckBox } from 'react-native-elements'
-// import {reducer, initialState} from './reducer'
+import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from 'react-redux';
 import { cleanTable, updateServedItem } from './redux/tableOrderSlice';
 
@@ -53,7 +52,6 @@ export default function OrderTrack({route}) {
         }
     }
     useEffect(()=>{
-        console.log('caleed')
         orders?.forEach((_, i)=>{
             serveCheckBox[i] = _.served
         });
@@ -64,7 +62,6 @@ export default function OrderTrack({route}) {
             setallserveCheckBox(false);
         }
     }, [orders, serveCheckBox])
-
     const item = ({ item , index}) => {
         return (
             <View style={{ flexDirection: "row"}}>
