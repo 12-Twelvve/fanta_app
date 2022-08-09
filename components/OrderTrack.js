@@ -96,7 +96,7 @@ export default function OrderTrack({route}) {
     return (
         <>
             {/* Headbar with back and home button */}
-            <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%",marginTop:20 }}>
                 <TouchableOpacity
                     onPress={() => navigation.goBack()}
                 >

@@ -68,7 +68,7 @@ const Menu = ({route}) => {
         <View style={styles.container}>
             {/* Menu Category Section LEFT */}
             <View style={styles.category}>
-                <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-around",marginTop:20 }}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                     >
@@ -79,7 +79,7 @@ const Menu = ({route}) => {
                     >
                         <MaterialIcons name="home" color="#F27405" size={30} />
                     </TouchableOpacity>
-                    <Text>Table no. {route.params.num}</Text>
+                    <Text style={{fontWeight:'bold'}}>Table no. {route.params.num}</Text>
                 </View>
                 <MenuCategory setMenuSelection={setMenuSelection} />
             </View>
@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         flex:1,
+        
     },
     category: {
         justifyContent: "flex-start",
