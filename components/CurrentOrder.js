@@ -4,11 +4,13 @@ import CurrentOrderCard from './CurrentOrderCard'
 import { useSelector } from 'react-redux'
 
 const CurrentOrder = (props) => {
-    const data = useSelector((state)=>state.table_order)
+    // const data = useSelector((state)=>state.table_order)
+    const data = useSelector((state)=>state.kot)
     return (
         <View style={{ backgroundColor: "#ECECEC", flex: 1 , borderRadius: 30, padding: 10, marginTop: 10,}}>
             <ScrollView >
-                {data.find((item)=>(item.tableNo==props.tablenum))?.items.map((item)=><CurrentOrderCard item={item} tablenum={props.tablenum}/>)}
+                {/* {data.find((item)=>(item.tableNo==props.tablenum))?.items.map((item)=><CurrentOrderCard item={item} tablenum={props.tablenum}/>)} */}
+                {data.items.map((item)=><CurrentOrderCard item={item} tablenum={props.tablenum}/>)}
             </ScrollView>
         </View>
     )

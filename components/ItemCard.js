@@ -3,13 +3,15 @@ import React, { useReducer } from 'react'
 import { Card, Button } from 'react-native-elements'
 
 import { useDispatch } from 'react-redux'
-import { addTableOrderItem } from './redux/tableOrderSlice'
+// import { addTableOrderItem } from './redux/tableOrderSlice'
+import { addItem } from './redux/kotSlice'
 
 export default function ItemCard(props) {
     const dispatch = useDispatch()
     const handleButtonPress = () => {
         props.setRenderClick(!props.renderClick)
-        dispatch(addTableOrderItem({data:{title:props.title, price:props.price, served:false, quantity:1}, tableNo: props.num }))
+        // dispatch(addTableOrderItem({data:{title:props.title, price:props.price, served:false, quantity:1}, tableNo: props.num }))
+        dispatch(addItem({data:{title:props.title, price:props.price, served:false, quantity:1}}))
     }
     return (
         <View style={styles.container}>

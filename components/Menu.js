@@ -8,7 +8,9 @@ import ItemCard from './ItemCard';
 import { Data } from '../menuitems';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-
+import { useDispatch, useSelector } from 'react-redux';
+import {addTableKot } from './redux/tableOrderSlice'
+import { cleanKot } from './redux/kotSlice';
 
 export const momo = [
     {
@@ -43,20 +45,30 @@ export const momo = [
         image: require('../assests/sukuti_momo.png')
     }
 ]
-
 const Menu = ({route}) => {
     const [menuSelection, setMenuSelection] = useState('1')
     const [selectedMenu, setSelectedMenu] = useState([])
     const [renderClick, setRenderClick] = useState(false)
     const navigation = useNavigation();
+    const kot = useSelector((state)=>state.kot)
+    const dispatch =useDispatch()
+    
     // const getMenu =()=>{}
     const checkList = (dl) => {
         return dl.id == menuSelection
     }
+
     const selectMenu = () => {
         let tempselectedItem = Data.find(checkList)
         setSelectedMenu(tempselectedItem?.menulist)
     }
+    const handleKot =()=>{
+        dispatch(addTableKot({kot, tableNo:route.params.num }))
+        navigation.navigate('Track', { num: route.params.num })
+        dispatch(cleanKot())
+        
+    }
+
     useEffect(() => {
         selectMenu()
     })
@@ -108,7 +120,7 @@ const Menu = ({route}) => {
                             borderRadius: 3,
                             //alignSelf:"baseline"
                         }}
-                        onPress={() => navigation.navigate('Track', { num: route.params.num })}
+                        onPress={handleKot}
                     />
                 </View>
             </View>

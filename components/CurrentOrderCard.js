@@ -2,19 +2,31 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch } from 'react-redux';
-import { removeTableOrderItem , decrementQuantity} from './redux/tableOrderSlice';
-
-export default function CurrentOrderCard({item, tablenum}) {
+// import { removeTableOrderItem , decrementQuantity} from './redux/tableOrderSlice';
+import { removeItem, decrementQuantity } from './redux/kotSlice';
+export default function CurrentOrderCard({item}) {
+    // export default function CurrentOrderCard({item, tablenum}) {
     const dispatch = useDispatch();
+
+    // const handleDecrease=()=>{
+    //     if(item.quantity>1){
+    //         dispatch(decrementQuantity({tableNo:tablenum, title:item.title}))
+    //     }else{
+    //         handleCancel()
+    //     }
+    // }
     const handleDecrease=()=>{
         if(item.quantity>1){
-            dispatch(decrementQuantity({tableNo:tablenum, title:item.title}))
+            dispatch(decrementQuantity({title:item.title}))
         }else{
             handleCancel()
         }
     }
+    // const handleCancel =()=>{
+    //     dispatch(removeTableOrderItem({tableNo:tablenum, title:item.title}))
+    // }
     const handleCancel =()=>{
-        dispatch(removeTableOrderItem({tableNo:tablenum, title:item.title}))
+        dispatch(removeItem({title:item.title}))
     }
     return (
         <View style={styles.menuItemStyle}>

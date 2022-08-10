@@ -1,68 +1,66 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [{tableNo:'', items:[]}];
+const initialState = [{tableNo:'', kot:[],id:''}];
 
 const tableOrderSlice = createSlice({
   name: "table_order",
   initialState,
   reducers: {
-    addTableOrderItem(state, { payload }) {
+
+    addTableKot(state, { payload }) {
       // console.log(payload);
-      const { data, tableNo} = payload;
-      let checkList = state.map((it)=>(it.tableNo == tableNo)?true:false).includes(true)
-      if(checkList) {
-        state.forEach((item)=>{
-            if (item.tableNo == tableNo){
-                // if that item is already there
-                if (item.items.find(ele=>ele.title == data.title)){
-                    item.items.forEach(ele=>ele.title == data.title?ele.quantity+=1:ele)
-                }
-                else{
-                    item.items.push(data)
-                }
+      const { kot, tableNo} = payload;
+      console.log('--addkot', kot, tableNo)
+      let checkList = state.map((table)=>(table.tableNo == tableNo)?true:false).includes(true)
+      if(checkList){
+        state.forEach((table)=>{
+            if (table.tableNo == tableNo){
+                table.kot.push(kot)
             }})}
       else{
-        let temp={tableNo, items:[data]}
+        let temp={tableNo, kot:[kot], id:Date.now()}
         state.push(temp)
       }
+      console.log('--addkot', state)
       return state
-    },
-    incrementQuantity(state, { payload }) {
-      return state
-    },
-    decrementQuantity(state, { payload }) {
-      const {tableNo, title} = payload;
-      return state.forEach(table=>{
-        if(table.tableNo == tableNo){
-            table.items=table.items.map((item)=>item.title==title?{...item, quantity:item.quantity-1}:item)
-        }}
-        )
-    },
-    removeTableOrderItem: (state, {payload}) => {
-      const {tableNo, title} = payload;
-      return state.forEach(table=>{
-        if(table.tableNo == tableNo){
-            table.items=table.items.filter((item)=>item.title!=title)
-        }}
-        )
     },
     cleanTable(state, {payload}) {
       const {tableNo} = payload
       return state.filter(table => table.tableNo != tableNo)
-
     },
     updateServedItem(state, {payload}){
-      const {tableNo, index, value }= payload
+      const {tableNo, kotId, index, value } = payload
       return state.forEach((table)=>{
           if (table.tableNo == tableNo){
-              table.items[index].served=value
+              table.kot.forEach((kot)=>{
+                if (kot.kotId ==kotId){
+                  kot.items[index].served=value
+                  // kot.items.forEach((item=>{
+                  //   if(item.title ==title){
+                  //     item.served=value
+                  //   }
+                  // }))
+                }
+              })
           }
       })
-    }
+    },
+    updateAllServedItem(state, {payload}){
+      const { value, tableNo } = payload
+      return state.forEach((table)=>{
+          if (table.tableNo == tableNo){
+              table.kot.forEach((kot)=>{
+                  kot.items.forEach((item)=>{
+                    item.served=value
+                  })
+              })
+          }
+      })
+    },
   },
 });
 
-export const { addTableOrderItem, incrementQuantity , decrementQuantity, removeTableOrderItem, cleanTable, updateServedItem } =
+export const { addTableKot,  cleanTable, updateServedItem, updateAllServedItem } =
   tableOrderSlice.actions;
 const tableOrderReducer = tableOrderSlice.reducer;
 

@@ -1,46 +1,56 @@
-import { View, Text, FlatList, TouchableOpacity,Modal, StyleSheet , Pressable} from 'react-native'
+import { View, Text, FlatList,ScrollView, TextInput, TouchableOpacity,Modal, StyleSheet , Pressable} from 'react-native'
 import React, { useState,  useEffect } from 'react'
 import { Checkbox } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from 'react-redux';
-import { cleanTable, updateServedItem } from './redux/tableOrderSlice';
+import { cleanTable, updateServedItem, updateAllServedItem } from './redux/tableOrderSlice';
+
 
 export default function OrderTrack({route}) {
+    const [rerender, setrerender] = useState(false)
     const [modalVisible, setModalVisible] = useState(false);
     const dispatch = useDispatch()
-    const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.items)
+    const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.kot)
+    const [discount, setdiscount] = useState(0)
+    const [serviceTax, setserviceTax] = useState(0)
     const navigation = useNavigation();
     // checkbox
+
     const [allserveCheckBox, setallserveCheckBox] = useState(false)
-    const [serveCheckBox, setserveCheckBox] = useState([])
+    const [serveCheckBox, setserveCheckBox] = useState({})
     
     const getTotalPrice =()=>{  
         let total =0
-        orders?.map((it)=>{
-            total +=Number(it.price)*Number(it.quantity)
+        orders?.map((kot)=>{
+            kot.items.map((items)=>{
+                total +=Number(items.price)*Number(items.quantity)
+            })
         })
         return total
     }
-    const toggleCheckbox= (i)=>{
-        let tmp = !serveCheckBox[i]
-        setserveCheckBox(serveCheckBox.fill(tmp, i, i+1))
-        dispatch(updateServedItem({index:i, value:tmp, tableNo:route.params.num}))
+    const getGrandTotalPrice =()=>{  
+        let total = getTotalPrice()
+        let tax= Number(total)*(Number(serviceTax)/100)
+        let dscnt= Number(total)*(Number(discount)/100)
+        let gtotal = Number(total) + Number(tax) -Number(dscnt)
+        return gtotal
     }
+    const toggleCheckbox= (kotId, i)=>{
+        let tmp = !serveCheckBox[kotId+i]
+        serveCheckBox[kotId+i] = tmp
+        dispatch(updateServedItem({index:i, kotId:kotId, value:tmp, tableNo:route.params.num}))
+    }
+
     const toggleAllCheckbox =()=>{
         if(allserveCheckBox){
-            setserveCheckBox(serveCheckBox.fill(false))
             setallserveCheckBox(false)
-            serveCheckBox.map((v, i)=>{
-                dispatch(updateServedItem({index:i, value:v, tableNo:route.params.num}))  
-            })
+            dispatch(updateAllServedItem({value:false, tableNo:route.params.num}))  
+        
         }else{
-            setallserveCheckBox(serveCheckBox.fill(true))
             setallserveCheckBox(true)
-            serveCheckBox.map((v, i)=>{
-                dispatch(updateServedItem({index:i, value:v, tableNo:route.params.num}))  
-            })
+            dispatch(updateAllServedItem({value:true, tableNo:route.params.num}))  
         }
     }
     const handleCheckout =()=>{
@@ -52,26 +62,29 @@ export default function OrderTrack({route}) {
         }
     }
     useEffect(()=>{
-        orders?.forEach((_, i)=>{
-            serveCheckBox[i] = _.served
+        orders?.forEach((kot)=>{
+            kot?.items.forEach((item, i)=>{
+                serveCheckBox[kot.kotId+i] = item.served
+            })
         });
-        if (!serveCheckBox?.includes(false)) {
+        if (!Object.values(serveCheckBox)?.includes(false)) {
             setallserveCheckBox(true);
         }
         else{
             setallserveCheckBox(false);
         }
-    }, [orders, serveCheckBox])
-    const item = ({ item , index}) => {
+        setrerender(!rerender)
+    }, [orders, serveCheckBox, allserveCheckBox])
+    const Item = ({ item , kotId, index}) => {
         return (
             <View style={{ flexDirection: "row"}}>
                 <View style={{ width: "10%", alignItems: "center" }}>
                     <Checkbox
-                        status={serveCheckBox[index] ? 'checked': 'unchecked'}
+                        status={serveCheckBox[kotId+index] ? 'checked': 'unchecked'}
                         onPress={() => {
-                            toggleCheckbox(index)
+                            toggleCheckbox(kotId,index)
                         }}
-                    />
+                    />  
                 </View>
                 <View style={{ width: "45%", alignItems: "center"}}>
                     <Text >{item.title}</Text>
@@ -89,7 +102,6 @@ export default function OrderTrack({route}) {
             </View>
         )
     }
-
     return (
         <>
             {/* Headbar with back and home button */}
@@ -132,22 +144,43 @@ export default function OrderTrack({route}) {
                         <Text style={{ color: "white" }}>Price</Text>
                     </View>
                 </View>
+                <ScrollView>
                 {/* <View style={{ height: 300 }}></View> */}
-                <FlatList
-                    data={orders}
-                    renderItem={item}
+                {orders?.map((kot)=><FlatList
+                    data={kot.items}
+                    // extraData={kot.kotId} 
+                    renderItem={({item, index})=><Item item={item} kotId={kot.kotId} index={index}/>}
                     keyExtractor={(item, index) => index.toString()}
-                />
+                    extraData={rerender}
+                    />
+                )} 
+                </ScrollView>
+                {/* input function for discount and service tax */}
+                <View style={styles.inputDiv}>
+                <Text style={styles.inputText}>discount </Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={setdiscount}
+                    value={discount}
+                    keyboardType="numeric"
+                    />
+                <Text style={styles.inputText}>service Tax </Text>
+                <TextInput
+                    style={styles.inputField}
+                    onChangeText={setserviceTax}
+                    value={serviceTax}
+                    keyboardType="numeric"
+                    />
+                </View>
                 {/* total prize */}
                 {/* <View style={{flex: 1, height: 1, backgroundColor: 'black', margin:10}} /> */}
                 <View>
                     <View>
-                    <Text>Total:{getTotalPrice()}</Text>
-                    <Text>VAT: 13%</Text>
-                    <Text>Grand Total:{getTotalPrice()}</Text>
+                    <Text style={styles.inputText}>Total : {getTotalPrice()}</Text>
+                    {/* <Text>VAT: 13%</Text> */}
+                    <Text style={styles.inputText}>Grand Total : {getGrandTotalPrice()}</Text>
                     </View>
                 </View>
-
                 {/* bottom add and submit */}
                 <View>
                 <Modal
@@ -167,8 +200,9 @@ export default function OrderTrack({route}) {
                     <View style={styles.modalView}>
                         <View>
                         <Text>Total:<Text style={styles.modalText}>{getTotalPrice()}</Text></Text>
-                        <Text>VAT: 13%</Text>
-                        <Text>Grand Total:<Text style={styles.modalText}>{getTotalPrice()}</Text></Text>
+                        <Text>serviceTax: {serviceTax}%</Text>
+                        <Text>Discount: {discount}%</Text>
+                        <Text>Grand Total:<Text style={styles.modalText}>{getGrandTotalPrice()}</Text></Text>
                         </View>
                         {allserveCheckBox?<Text></Text>:<Text style={styles.warningText}>Not All food are Served</Text>}
                         <Pressable
@@ -208,7 +242,6 @@ export default function OrderTrack({route}) {
         </>
     )
 }
-
 const styles = StyleSheet.create({
     centeredView: {
       flex: 1,
@@ -247,10 +280,11 @@ const styles = StyleSheet.create({
       color: "white",
       fontWeight: "bold",
       textAlign: "center",
-      fontSize:15
+      fontSize:15,
     },
     modalText: {
       fontWeight: "bold",
+      fontSize:20,
       marginBottom: 25,
       textAlign: "center",
     },
@@ -259,6 +293,25 @@ const styles = StyleSheet.create({
         marginBottom: 25,
         textAlign: "center",
         color:"red"
-      }
+    },
+    inputDiv:{
+        flexDirection:'row',
+        alignItems:'center'
+    },
+    inputField:{
+        height: 40,
+        width:100,
+        marginVertical: 12,
+        borderWidth: 1,
+        padding: 5,
+        fontSize:25,
+        textAlign:'center',
+        marginHorizontal:20,
+    },
+    inputText:{
+        fontSize:20,
+        textAlign:'center',
+        fontWeight:'bold'
+    },
   });
   
