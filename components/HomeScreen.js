@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import BranchSelectorModal from './BranchSelectorModal';
 import storage from './Storage';
 
-
 const HomeScreen = ({route, navigation }) => {
     const [selectbranch, setSelectBranch] = useState('durbarmarg');
     const getBranch =()=>{
@@ -98,7 +97,6 @@ const HomeScreen = ({route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         height: "90%",
-        
         //alignItems: "center",
         justifyContent: "center",
         backgroundColor: "E4E4E4",

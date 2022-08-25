@@ -4,55 +4,37 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button} from 'react-native-elements';
 import { TextInput } from 'react-native-paper';
+import storage from './Storage';
 
-
-const DATA = [
-    {
-      title: "Main dishes",
-      data: [
-        { items: "Local Jhol Momo", availablestock: 1,actualStock:0, surplus:0, stockEntry:0 , tomorrowOrder:0, min:1 },
-        { items: "Local Jhol Momo", availablestock: 3,actualStock:0, surplus:0, stockEntry:0 ,tomorrowOrder:1, min:1 },
-    ]
-    },
-    {
-      title: "Desserts",
-      data: [
-        { items: "Local Jhol Momo", availablestock: 1,actualStock:0, surplus:0, stockEntry:0,tomorrowOrder:0, min:1  },
-        { items: "Local Jhol Momo", availablestock: 3,actualStock:0, surplus:0, stockEntry:0 ,tomorrowOrder:5, min:2 },
-    ]
-    },
-    {
-        title: "Daru",
-        data: [
-          { items: "Local Jhol ", availablestock: 1,actualStock:0, surplus:0, stockEntry:0 ,tomorrowOrder:5, min:2 },
-          { items: "Local ", availablestock: 3,actualStock:0, surplus:0, stockEntry:0 ,tomorrowOrder:5, min:2 },
-      
-      ]
-      }
-  ];
   const Item = ({ item,title, stock, setStock,}) => {
     const getActualValue =()=>{
-        return stock.find((parti)=>parti.title==title).data.find(particu=>particu.items ==item.items).actualStock
+        return stock.find((parti)=>parti.title==title).data.find(particu=>particu.item ==item.item).actual_remaining_stock
     }
     const handleActualUpdate =(event)=>{
         const { text } = event.nativeEvent;
         const name = event._dispatchInstances._debugOwner.memoizedProps.name
         stock.forEach((parti)=>{
             if (parti.title==title){
-                parti.data.forEach((itt)=>itt.items==name?itt.actualStock=text:itt.actualStock )
+                // acutal update
+                parti.data.forEach((itt)=>itt.item==name?itt.actual_remaining_stock=text:itt.actual_remaining_stock )
+                // surplus update
+                parti.data.forEach((itt)=>itt.item==name?itt.surplus=Number(itt.actual_remaining_stock)-Number(itt.available_remaining_stock):itt.surplus )
             }
         })
         setStock(stock)
     }
     const getEntryValue =()=>{
-        return stock.find((parti)=>parti.title==title).data.find(particu=>particu.items ==item.items).stockEntry
+        return stock.find((parti)=>parti.title==title).data.find(particu=>particu.item ==item.item).stockEntry
     }
     const handleStockEntryUpdate =(event)=>{
         const { text } = event.nativeEvent;
         const name = event._dispatchInstances._debugOwner.memoizedProps.name
         stock.forEach((parti)=>{
             if (parti.title==title){
-                parti.data.forEach((itt)=>itt.items==name?itt.stockEntry=text:itt.stockEntry )
+                // entry update
+                parti.data.forEach((itt)=>itt.item==name?itt.stockEntry=text:itt.stockEntry )
+                // available update
+                parti.data.forEach((itt)=>itt.item==name?itt.available_remaining_stock=Number(itt.available_remaining_stock)+Number(itt.stockEntry):itt.available_remaining_stock )
             }
         })
         setStock(stock)
@@ -61,39 +43,44 @@ const DATA = [
     return (
         <View style={{ flexDirection: "row", height: 50 }}>
             <View style={{ width: "30%", alignItems: "center", flexDirection: "row", paddingLeft:20 }}>
-                <Text style={styles.title}>{item.items}</Text>
+                <Text style={styles.title}>{item.item}</Text>
             </View>
+            {/* useless */}
             <View style={{ width: "10%", alignItems: "center" }}>
-                <Text style={{fontSize: 24, color:item.tomorrowOrder<item.min?"red":"", textAlign:'center'}}> {item.tomorrowOrder}</Text>
+                <Text style={{fontSize: 24, color:item.available_remaining_stock<item.minValue?"red":"", textAlign:'center'}}> {item.available_remaining_stock}</Text>
             </View>
+
+            {/* -------- */}
             <View style={{ width: "15%", alignItems: "center" }}>
-                <Text style={styles.title}> {item.availablestock}</Text>
+                <Text style={styles.title}> {item.available_remaining_stock}</Text>
             </View>
             <View style={{ width: "10%", alignItems: "center" }}>
                 <Text style={styles.title}> {item.surplus}</Text>
             </View>
-            <View style={{ width: "20%", alignItems: "center" }}>
+            <View style={{ width: "20%", alignItems: "center", borderWidth:0.5 }}>
                 <TextInput
-                    defaultValue={item.actualStock}
+                    defaultValue={item.actual_remaining_stock}
                     value={getActualValue}
                     id={item.title}
-                    name={item.items}
+                    name={item.item}
                     onChange={(event)=>handleActualUpdate(event)}
                     outlined
                     keyboardType='phone-pad'
-                    style={{ width: "100%", height: "100%",fontSize: 24, marginRight:12 , textAlign:'center'}}
+                    style={{ width: "100%", fontSize: 24, marginRight:12 , textAlign:'center'}}
+                    // style={{ width: "100%", height: "100%",fontSize: 24, marginRight:12 , textAlign:'center'}}
                 />
             </View>
-            <View style={{ width: "15%", alignItems: "center" }}>
+            <View style={{ width: "15%", alignItems: "center", borderWidth:0.5 }}>
                 <TextInput
                     defaultValue={item.stockEntry}
                     value={getEntryValue}
                     id={item.title}
-                    name={item.items}
+                    name={item.item}
                     onChange={(event)=>handleStockEntryUpdate(event)}
                     outlined
                     keyboardType='phone-pad'
-                    style={{ width: "100%", height: "100%",fontSize: 24, textAlign:'center' }}
+                    style={{ width: "100%",fontSize: 24, textAlign:'center' }}
+                    // style={{ width: "100%", height: "100%",fontSize: 24, textAlign:'center' }}
                 />
             </View>
         </View>
@@ -101,12 +88,69 @@ const DATA = [
 }
 export default function Stock() {
     const navigation = useNavigation();
-    const [stock, setStock] = useState(DATA)
+    const [branch, setbranch] = useState('')
+    const [stock, setStock] = useState('')
+    const [lock, setlock] = useState(false)
+    const [date, setdate] = useState('')
+    const getBranch =()=>{
+        storage.load({
+            key: 'branch',
+            autoSync: true,
+            syncInBackground: true,
+          })
+          .then(br => {
+            if (br == "durbarmarg"){
+               setbranch("durbarmarg_stock")
+            }else{
+               setbranch("kumaripati_stock")
+            }
+          })
+          .catch(err => {
+            console.warn(err.message);
+          });
+      }
     const handlesubmit =()=>{
         // submit post data -->
+        getBranch()
+        // console.log({date:date,items:stock})
+        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+            method: 'POST', // or 'PUT'
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({date:date,items:stock}),
+        })
+        .then((response) => response.json())
+        .then((message) => {
+            console.log('Success:', message);
+            setlock(false)
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
     }
-    const fecthData =()=>{}
-    useEffect(()=>{})
+    const fecthData =()=>{
+        getBranch()
+        // console.log('http://192.168.1.70:8000/'+branch)
+        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'')
+        .then((response) => response.json())
+        .then((data) => {
+            // console.log("--+--",data.items[0].data)
+            if (branch){
+                setStock(data.items)
+                setdate(data.date)
+                setlock(true)
+            }
+        })
+        .catch((error) => {
+            console.error('Error: ', error);
+        }); 
+    }
+    useEffect(()=>{
+        if (!lock){
+            fecthData()
+        }
+    })
 
     return (
         <>
@@ -133,7 +177,7 @@ export default function Stock() {
                     </View>
                     <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" , fontWeight: "bold", fontSize: 20}}>Tomorrow Order</Text>
-                    </View>
+                    </View> 
                     <View style={{ width: "15%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" , fontWeight: "bold", fontSize: 20}}>Available Remaining Stock</Text>
                     </View>
@@ -149,12 +193,13 @@ export default function Stock() {
                 </View>
                  <SafeAreaView style={styles.container}>
                  <SectionList
-                    sections={DATA}
+                    sections={stock}  
                     keyExtractor={(item, index) => item + index}
                     renderItem={({ item,  section: { title }}) => <Item title={title} item={item} stock={stock} setStock={setStock} />}
                     renderSectionHeader={({ section: { title } }) => (
                         <Text style={styles.header}>{title}</Text>
                     )}
+                    extraData={stock}
                     />
                 </SafeAreaView>
                     <Button
