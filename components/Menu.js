@@ -66,7 +66,6 @@ const Menu = ({route}) => {
         dispatch(addTableKot({kot, tableNo:route.params.num }))
         navigation.navigate('Track', { num: route.params.num })
         dispatch(cleanKot())
-        
     }
 
     useEffect(() => {

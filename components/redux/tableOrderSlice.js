@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-const initialState = [{tableNo:'', kot:[],id:''}];
+import moment from "moment";
+const initialState = [{tableNo:'', kot:[],orderId:'', date:''}];
 
 const tableOrderSlice = createSlice({
   name: "table_order",
@@ -10,7 +10,8 @@ const tableOrderSlice = createSlice({
     addTableKot(state, { payload }) {
       // console.log(payload);
       const { kot, tableNo} = payload;
-      console.log('--addkot', kot, tableNo)
+      // console.log('--addkot', kot, tableNo)
+
       let checkList = state.map((table)=>(table.tableNo == tableNo)?true:false).includes(true)
       if(checkList){
         state.forEach((table)=>{
@@ -18,10 +19,10 @@ const tableOrderSlice = createSlice({
                 table.kot.push(kot)
             }})}
       else{
-        let temp={tableNo, kot:[kot], id:Date.now()}
+        let temp={tableNo, kot:[kot], orderId:Date.now(), date:moment(Date.now()).format('YYYY-MM-DD') }
         state.push(temp)
       }
-      console.log('--addkot', state)
+      // console.log('--addkot', state)
       return state
     },
     cleanTable(state, {payload}) {

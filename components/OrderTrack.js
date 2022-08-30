@@ -6,6 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from 'react-redux';
 import { cleanTable, updateServedItem, updateAllServedItem } from './redux/tableOrderSlice';
+import storage from './Storage';
 
 
 export default function OrderTrack({route}) {
@@ -15,12 +16,31 @@ export default function OrderTrack({route}) {
     const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.kot)
     const [discount, setdiscount] = useState(0)
     const [serviceTax, setserviceTax] = useState(0)
+    const [branch, setbranch] = useState('')
     const navigation = useNavigation();
+    // for submitting.
+    const ord = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num))
     // checkbox
 
     const [allserveCheckBox, setallserveCheckBox] = useState(false)
     const [serveCheckBox, setserveCheckBox] = useState({})
-    
+    const getBranch =()=>{
+        storage.load({
+            key: 'branch',
+            autoSync: true,
+            syncInBackground: true,
+          })
+          .then(br => {
+            if (br == "durbarmarg"){
+               setbranch("durbarmarg_order")
+            }else{
+               setbranch("kumaripati_order")
+            }
+          })
+          .catch(err => {
+            console.warn(err.message);
+          });
+    }
     const getTotalPrice =()=>{  
         let total =0
         orders?.map((kot)=>{
@@ -41,8 +61,9 @@ export default function OrderTrack({route}) {
         let tmp = !serveCheckBox[kotId+i]
         serveCheckBox[kotId+i] = tmp
         dispatch(updateServedItem({index:i, kotId:kotId, value:tmp, tableNo:route.params.num}))
+        // handle served
+        handleOrder()
     }
-
     const toggleAllCheckbox =()=>{
         if(allserveCheckBox){
             setallserveCheckBox(false)
@@ -59,8 +80,47 @@ export default function OrderTrack({route}) {
             setModalVisible(!modalVisible)
             dispatch(cleanTable({tableNo:route.params.num}))
             navigation.navigate('Table', {tableNum:route.params.num})
+            // handle Checkout
+            handleCheckoutOrder()
         }
     }
+    const handleCheckoutOrder =()=>{
+        getBranch()
+        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({...ord, discount:discount, serviceTax:serviceTax, total:getTotalPrice(), grandTotal:getGrandTotalPrice()}),
+        })
+        .then((response) => response.json())
+        .then((message) => {
+            console.log('Success:', message);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    const handleOrder=()=>{
+        console.log("ordertrck87-",ord)
+        getBranch()
+        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(ord),
+        })
+        .then((response) => response.json())
+        .then((message) => {
+            console.log('Success:', message);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    // const handleUpdateOrder =()=>{
+    // }
     useEffect(()=>{
         orders?.forEach((kot)=>{
             kot?.items.forEach((item, i)=>{
@@ -74,7 +134,11 @@ export default function OrderTrack({route}) {
             setallserveCheckBox(false);
         }
         setrerender(!rerender)
+        // submit data
+        handleOrder()
+
     }, [orders, serveCheckBox, allserveCheckBox])
+
     const Item = ({ item , kotId, index}) => {
         return (
             <View style={{ flexDirection: "row"}}>
@@ -84,11 +148,10 @@ export default function OrderTrack({route}) {
                         onPress={() => {
                             toggleCheckbox(kotId,index)
                         }}
-                    />  
+                    />
                 </View>
                 <View style={{ width: "45%", alignItems: "center"}}>
                     <Text >{item.title}</Text>
-
                 </View>
                 <View style={{ width: "15%", alignItems: "center" }}>
                     <Text>{item.served?"served":"pending"}</Text>
@@ -315,3 +378,6 @@ const styles = StyleSheet.create({
     },
   });
   
+
+
+  //  LOG  --addkot [{"id": "", "kot": [], "tableNo": ""}, {"id": 1661504956333, "kot": [[Object], [Object]], "tableNo": "3"}]
