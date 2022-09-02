@@ -4,7 +4,7 @@ export const Data = [
         menulist: [
             {
                 id: "1",
-                name: "Local Jhol Momo",
+                name: "jhol momo",
                 price: "150",
                 image: require('./assests/jholmomo.png')
 

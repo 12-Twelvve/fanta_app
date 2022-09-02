@@ -12,23 +12,23 @@ export const DATA = [
     },
     {
         id: "3",
-        title: "Third Item",
+        title: "Drinks",
     },
     {
         id: "4",
-        title: "Fourth Item",
+        title: "Desert",
     },
     {
         id: "5",
-        title: "Fifth Item",
+        title: "Sinkafe",
     },
     {
         id: "6",
-        title: "Sixth Item",
+        title: "Pizza",
     },
     {
         id: "7",
-        title: "Seventh Item",
+        title: "khana",
     },
 
 ];

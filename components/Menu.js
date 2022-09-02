@@ -12,16 +12,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import {addTableKot } from './redux/tableOrderSlice'
 import { cleanKot } from './redux/kotSlice';
 
+
 export const momo = [
+
     {
         id: "1",
-        name: "Local Jhol Momo",
-        price: "150",
+        name: "jhol momo",
+        price: "1500",
         image: require('../assests/jholmomo.png')
     },
     {
         name: "Tandoori momo",
-        price: "10",
+        price: "100",
         image: require('../assests/tandoorimomo.png')
     },
     {

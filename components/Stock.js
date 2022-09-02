@@ -34,7 +34,7 @@ import storage from './Storage';
                 // entry update
                 parti.data.forEach((itt)=>itt.item==name?itt.stockEntry=text:itt.stockEntry )
                 // available update
-                parti.data.forEach((itt)=>itt.item==name?itt.available_remaining_stock=Number(itt.available_remaining_stock)+Number(itt.stockEntry):itt.available_remaining_stock )
+                // 
             }
         })
         setStock(stock)
@@ -70,6 +70,7 @@ import storage from './Storage';
                     // style={{ width: "100%", height: "100%",fontSize: 24, marginRight:12 , textAlign:'center'}}
                 />
             </View>
+
             <View style={{ width: "15%", alignItems: "center", borderWidth:0.5 }}>
                 <TextInput
                     defaultValue={item.stockEntry}
@@ -110,10 +111,16 @@ export default function Stock() {
           });
       }
     const handlesubmit =()=>{
+        // manage available stock
+        stock.forEach((parti)=>{
+                parti.data.forEach((itt)=>{
+                    itt.available_remaining_stock=Number(itt.available_remaining_stock)+Number(itt.stockEntry)
+                    itt.stockEntry=Number(0)
+                })
+        })
         // submit post data -->
         getBranch()
-        // console.log({date:date,items:stock})
-        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'', {
             method: 'POST', // or 'PUT'
             headers: {
             'Content-Type': 'application/json',
@@ -132,9 +139,9 @@ export default function Stock() {
     const fecthData =()=>{
         getBranch()
         // console.log('http://192.168.1.70:8000/'+branch)
-        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'')
+        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'')
         .then((response) => response.json())
-        .then((data) => {
+        .then((data) =>{
             // console.log("--+--",data.items[0].data)
             if (branch){
                 setStock(data.items)

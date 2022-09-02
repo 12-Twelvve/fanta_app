@@ -21,7 +21,6 @@ export default function OrderTrack({route}) {
     // for submitting.
     const ord = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num))
     // checkbox
-
     const [allserveCheckBox, setallserveCheckBox] = useState(false)
     const [serveCheckBox, setserveCheckBox] = useState({})
     const getBranch =()=>{
@@ -52,10 +51,11 @@ export default function OrderTrack({route}) {
     }
     const getGrandTotalPrice =()=>{  
         let total = getTotalPrice()
-        let tax= Number(total)*(Number(serviceTax)/100)
         let dscnt= Number(total)*(Number(discount)/100)
-        let gtotal = Number(total) + Number(tax) -Number(dscnt)
-        return gtotal
+        let total2 = Number(total) - Number(dscnt)
+        let tax= Number(total2)*(Number(serviceTax)/100)
+        let gtotal = Number(total2) + Number(tax)
+        return gtotal.toFixed(2)
     }
     const toggleCheckbox= (kotId, i)=>{
         let tmp = !serveCheckBox[kotId+i]
@@ -86,7 +86,7 @@ export default function OrderTrack({route}) {
     }
     const handleCheckoutOrder =()=>{
         getBranch()
-        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'?type=checkout', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -102,9 +102,9 @@ export default function OrderTrack({route}) {
         });
     }
     const handleOrder=()=>{
-        console.log("ordertrck87-",ord)
+        // console.log("ordertrck87-",ord)
         getBranch()
-        fetch('https://113e-103-163-182-212.in.ngrok.io/'+branch+'', {
+        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
