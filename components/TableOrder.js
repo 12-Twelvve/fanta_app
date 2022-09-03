@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, {useReducer, useEffect} from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { falseOnlinePortal } from './redux/onlinePortal';
 
 const tableno = [
     {
@@ -25,6 +26,8 @@ const tableno = [
 
 export default function TableOrder() {
     const data = useSelector((state)=>state.table_order)
+    const dispatch = useDispatch()
+
     const navigation = useNavigation();
     const Table = (props) => {
         return (
@@ -36,6 +39,9 @@ export default function TableOrder() {
             </TouchableOpacity>
         )
     }
+    useEffect(()=>{
+        dispatch(falseOnlinePortal())
+    },[])
     return (
         <View>
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%",marginTop:30 }}>

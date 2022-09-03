@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from 'react-redux';
-import { cleanTable, updateServedItem, updateAllServedItem } from './redux/tableOrderSlice';
+import { cleanTable, updateServedItem, updateAllServedItem, updateCancelItem } from './redux/tableOrderSlice';
 import storage from './Storage';
 
 
@@ -16,13 +16,17 @@ export default function OrderTrack({route}) {
     const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.kot)
     const [discount, setdiscount] = useState(0)
     const [serviceTax, setserviceTax] = useState(0)
+    const [onlinePartner_token, setonlinePartner_token] = useState('')
     const [branch, setbranch] = useState('')
     const navigation = useNavigation();
+    const online_portal = useSelector((state)=>state.online_portal)
+
     // for submitting.
     const ord = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num))
     // checkbox
     const [allserveCheckBox, setallserveCheckBox] = useState(false)
     const [serveCheckBox, setserveCheckBox] = useState({})
+    const [removeitem, setremoveitem] = useState({})
     const getBranch =()=>{
         storage.load({
             key: 'branch',
@@ -44,7 +48,10 @@ export default function OrderTrack({route}) {
         let total =0
         orders?.map((kot)=>{
             kot.items.map((items)=>{
-                total +=Number(items.price)*Number(items.quantity)
+                if (!items.cancel){
+                    // console.log(items.cancel)
+                    total +=Number(items.price)*Number(items.quantity)
+                }
             })
         })
         return total
@@ -61,6 +68,13 @@ export default function OrderTrack({route}) {
         let tmp = !serveCheckBox[kotId+i]
         serveCheckBox[kotId+i] = tmp
         dispatch(updateServedItem({index:i, kotId:kotId, value:tmp, tableNo:route.params.num}))
+        // handle served
+        handleOrder()
+    }
+    const toggleDeleteCheckbox= (kotId, i)=>{
+        let tmp = !removeitem[kotId+i]
+        removeitem[kotId+i] = tmp
+        dispatch(updateCancelItem({index:i, kotId:kotId, value:tmp, tableNo:route.params.num}))
         // handle served
         handleOrder()
     }
@@ -91,7 +105,7 @@ export default function OrderTrack({route}) {
             headers: {
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({...ord, discount:discount, serviceTax:serviceTax, total:getTotalPrice(), grandTotal:getGrandTotalPrice()}),
+            body: JSON.stringify({...ord, discount:discount, serviceTax:serviceTax, total:getTotalPrice(), grandTotal:getGrandTotalPrice(), token:onlinePartner_token}),
         })
         .then((response) => response.json())
         .then((message) => {
@@ -119,6 +133,7 @@ export default function OrderTrack({route}) {
             console.error('Error:', error);
         });
     }
+
     // const handleUpdateOrder =()=>{
     // }
     useEffect(()=>{
@@ -156,11 +171,20 @@ export default function OrderTrack({route}) {
                 <View style={{ width: "15%", alignItems: "center" }}>
                     <Text>{item.served?"served":"pending"}</Text>
                 </View>
-                <View style={{ width: "15%", alignItems: "center" }}>
+                <View style={{ width: "10%", alignItems: "center" }}>
                     <Text>{item.quantity}</Text>
                 </View>
-                <View style={{ width: "15%", alignItems: "center" }}>
+                <View style={{ width: "10%", alignItems: "center" }}>
                     <Text>{item.price}</Text>
+                </View>
+                <View style={{ width: "10%", alignItems: "center" }}>
+                    <Checkbox
+                        color='red'
+                        status={removeitem[kotId+index] ? 'checked': 'unchecked'}
+                        onPress={() => {
+                            toggleDeleteCheckbox(kotId,index)
+                        }}
+                    />
                 </View>
             </View>
         )
@@ -200,11 +224,14 @@ export default function OrderTrack({route}) {
                     <View style={{ width: "15%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" }}>Status</Text>
                     </View>
-                    <View style={{ width: "15%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
-                        <Text style={{ color: "white" }}>Qty</Text>
+                    <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
+                        <Text style={{ color: "white" }}>Quantity</Text>
                     </View>
-                    <View style={{ width: "15%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
+                    <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" }}>Price</Text>
+                    </View>
+                    <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
+                        <Text style={{ color: "white" }}>Canceled</Text>
                     </View>
                 </View>
                 <ScrollView>
@@ -235,6 +262,18 @@ export default function OrderTrack({route}) {
                     keyboardType="numeric"
                     />
                 </View>
+                {/* for online partners order */}
+
+                {
+                    online_portal?<View style={styles.inputDiv}>
+                    <Text style={styles.inputText}> Token </Text>
+                    <TextInput
+                        style={styles.tokenField}
+                        onChangeText={setonlinePartner_token}
+                        value={onlinePartner_token}
+                        />
+                    </View>:''
+                }
                 {/* total prize */}
                 {/* <View style={{flex: 1, height: 1, backgroundColor: 'black', margin:10}} /> */}
                 <View>
@@ -367,6 +406,16 @@ const styles = StyleSheet.create({
         marginVertical: 12,
         borderWidth: 1,
         padding: 5,
+        fontSize:25,
+        textAlign:'center',
+        marginHorizontal:20,
+    },
+    tokenField:{
+        height: 40,
+        width:205,
+        marginVertical: 12,
+        borderWidth: 1,
+        padding: 3,
         fontSize:25,
         textAlign:'center',
         marginHorizontal:20,

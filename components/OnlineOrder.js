@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useSelector, useDispatch } from 'react-redux';
+import { trueOnlinePortal } from './redux/onlinePortal';
 
 const tableno = [
     {
@@ -23,8 +25,11 @@ const tableno = [
 
 ]
 export default function OnlineOrder() {
-
     const navigation = useNavigation();
+    const dispatch = useDispatch()
+    useEffect(()=>{
+        dispatch(trueOnlinePortal())
+    },[])
 
     const Table = (props) => {
         return (

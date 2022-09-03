@@ -6,12 +6,10 @@ const tableOrderSlice = createSlice({
   name: "table_order",
   initialState,
   reducers: {
-
     addTableKot(state, { payload }) {
       // console.log(payload);
       const { kot, tableNo} = payload;
       // console.log('--addkot', kot, tableNo)
-
       let checkList = state.map((table)=>(table.tableNo == tableNo)?true:false).includes(true)
       if(checkList){
         state.forEach((table)=>{
@@ -36,11 +34,6 @@ const tableOrderSlice = createSlice({
               table.kot.forEach((kot)=>{
                 if (kot.kotId ==kotId){
                   kot.items[index].served=value
-                  // kot.items.forEach((item=>{
-                  //   if(item.title ==title){
-                  //     item.served=value
-                  //   }
-                  // }))
                 }
               })
           }
@@ -58,10 +51,22 @@ const tableOrderSlice = createSlice({
           }
       })
     },
+    updateCancelItem(state, {payload}){
+      const {tableNo, kotId, index, value } = payload
+      return state.forEach((table)=>{
+          if (table.tableNo == tableNo){
+              table.kot.forEach((kot)=>{
+                if (kot.kotId ==kotId){
+                  kot.items[index].cancel=value
+                }
+              })
+          }
+      })
+    },
   },
 });
 
-export const { addTableKot,  cleanTable, updateServedItem, updateAllServedItem } =
+export const { addTableKot,  cleanTable, updateServedItem, updateAllServedItem, updateCancelItem } =
   tableOrderSlice.actions;
 const tableOrderReducer = tableOrderSlice.reducer;
 

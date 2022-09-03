@@ -24,7 +24,7 @@ const HomeScreen = ({route, navigation }) => {
       useEffect(()=>{
         getBranch();
       },[])
-  
+      
     return (
         <View>
             <Text style={{ alignSelf: "center", fontSize: 30, color: "#F27405" }}>Sinka</Text>
@@ -60,7 +60,7 @@ const HomeScreen = ({route, navigation }) => {
                             style={{ width: 250, height: 200 }}
                         />
                         <Text style={{ marginBottom: 10 }}>
-                            online food delivery system
+                            online delivery partner
                         </Text>
                         <Button
                             //icon={<Icon name='code' color='#ffffff' />}

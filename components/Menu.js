@@ -60,12 +60,16 @@ const Menu = ({route}) => {
         return dl.id == menuSelection
     }
 
+
     const selectMenu = () => {
         let tempselectedItem = Data.find(checkList)
         setSelectedMenu(tempselectedItem?.menulist)
     }
     const handleKot =()=>{
-        dispatch(addTableKot({kot, tableNo:route.params.num }))
+        // console.log(kot.kotId)
+        if (kot.kotId !=''){
+            dispatch(addTableKot({kot, tableNo:route.params.num }))
+        }
         navigation.navigate('Track', { num: route.params.num })
         dispatch(cleanKot())
     }
