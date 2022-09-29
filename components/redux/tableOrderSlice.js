@@ -63,10 +63,22 @@ const tableOrderSlice = createSlice({
           }
       })
     },
+    deleteItem(state, {payload}){
+      const {tableNo, kotId, index } = payload
+      return state.forEach((table)=>{
+          if (table.tableNo == tableNo){
+              table.kot.forEach((kot)=>{
+                if (kot.kotId ==kotId){
+                  kot.items.splice(index,1)
+                }
+              })
+          }
+      })
+    },
   },
 });
 
-export const { addTableKot,  cleanTable, updateServedItem, updateAllServedItem, updateCancelItem } =
+export const { addTableKot,  cleanTable, updateServedItem, updateAllServedItem, updateCancelItem, deleteItem } =
   tableOrderSlice.actions;
 const tableOrderReducer = tableOrderSlice.reducer;
 

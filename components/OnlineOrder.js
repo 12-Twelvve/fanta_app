@@ -25,6 +25,7 @@ const tableno = [
 
 ]
 export default function OnlineOrder() {
+    const data = useSelector((state)=>state.table_order)
     const navigation = useNavigation();
     const dispatch = useDispatch()
     useEffect(()=>{
@@ -34,7 +35,8 @@ export default function OnlineOrder() {
     const Table = (props) => {
         return (
             <TouchableOpacity onPress={() => navigation.navigate('Menu', { num: props.no })}>
-                <View style={{ backgroundColor: "#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
+                <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
+                {/* <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"green",  }}> */}
                     <Text style={{ color: "white", fontSize: 20, fontWeight:'bold' }}>{props.no}</Text>
                 </View>
             </TouchableOpacity>

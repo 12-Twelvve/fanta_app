@@ -120,7 +120,7 @@ export default function Stock() {
         })
         // submit post data -->
         getBranch()
-        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'', {
+        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'', {
             method: 'POST', // or 'PUT'
             headers: {
             'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export default function Stock() {
     const fecthData =()=>{
         getBranch()
         // console.log('http://192.168.1.70:8000/'+branch)
-        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'')
+        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'')
         .then((response) => response.json())
         .then((data) =>{
             // console.log("--+--",data.items[0].data)
@@ -180,7 +180,7 @@ export default function Stock() {
             {/* ----------header  item name  available stock actual stock---------------------------------- */}
                 <View style={{ flexDirection: "row", height:60}}>
                     <View style={{ width: "30%", backgroundColor: "#F27405", paddingLeft:20, justifyContent: "center", }}>
-                        <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>Pname</Text>
+                        <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>Particulars</Text>
                     </View>
                     <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" , fontWeight: "bold", fontSize: 20}}>Tomorrow Order</Text>

@@ -5,13 +5,16 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Button } from 'react-native-elements'
 import { useSelector, useDispatch } from 'react-redux';
-import { cleanTable, updateServedItem, updateAllServedItem, updateCancelItem } from './redux/tableOrderSlice';
+import { cleanTable, updateServedItem, updateAllServedItem, updateCancelItem, deleteItem } from './redux/tableOrderSlice';
 import storage from './Storage';
 
 
 export default function OrderTrack({route}) {
     const [rerender, setrerender] = useState(false)
     const [modalVisible, setModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [deleteConfirmation, setdeleteConfirmation] = useState(false)
+    const [deleteData, setdeleteData] = useState({})
     const dispatch = useDispatch()
     const orders = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num)?.kot)
     const [discount, setdiscount] = useState(0)
@@ -20,7 +23,6 @@ export default function OrderTrack({route}) {
     const [branch, setbranch] = useState('')
     const navigation = useNavigation();
     const online_portal = useSelector((state)=>state.online_portal)
-
     // for submitting.
     const ord = useSelector((state)=>state.table_order?.find(table =>table?.tableNo == route.params.num))
     // checkbox
@@ -71,7 +73,7 @@ export default function OrderTrack({route}) {
         // handle served
         handleOrder()
     }
-    const toggleDeleteCheckbox= (kotId, i)=>{
+    const toggleCancelCheckbox= (kotId, i)=>{
         let tmp = !removeitem[kotId+i]
         removeitem[kotId+i] = tmp
         dispatch(updateCancelItem({index:i, kotId:kotId, value:tmp, tableNo:route.params.num}))
@@ -93,14 +95,14 @@ export default function OrderTrack({route}) {
         if(allserveCheckBox){
             setModalVisible(!modalVisible)
             dispatch(cleanTable({tableNo:route.params.num}))
-            navigation.navigate('Table', {tableNum:route.params.num})
+            navigation.navigate('Home')
             // handle Checkout
             handleCheckoutOrder()
         }
     }
     const handleCheckoutOrder =()=>{
         getBranch()
-        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'?type=checkout', {
+        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'?type=checkout', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ export default function OrderTrack({route}) {
     const handleOrder=()=>{
         // console.log("ordertrck87-",ord)
         getBranch()
-        fetch('https://4c3f-103-163-182-68.in.ngrok.io/'+branch+'', {
+        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -133,9 +135,11 @@ export default function OrderTrack({route}) {
             console.error('Error:', error);
         });
     }
-
-    // const handleUpdateOrder =()=>{
-    // }
+    const toggleDeleteItem= (dt)=>{
+        dispatch(deleteItem({index:dt.index, kotId:dt.kotId, tableNo:route.params.num}))
+        handleOrder()
+        setDeleteModalVisible(false)
+    }
     useEffect(()=>{
         orders?.forEach((kot)=>{
             kot?.items.forEach((item, i)=>{
@@ -154,6 +158,11 @@ export default function OrderTrack({route}) {
 
     }, [orders, serveCheckBox, allserveCheckBox])
 
+    const deleteConfirmationModel =(kotId, index)=>{
+       setdeleteData({kotId, index})
+       setDeleteModalVisible(true)
+    }
+
     const Item = ({ item , kotId, index}) => {
         return (
             <View style={{ flexDirection: "row"}}>
@@ -165,10 +174,10 @@ export default function OrderTrack({route}) {
                         }}
                     />
                 </View>
-                <View style={{ width: "45%", alignItems: "center"}}>
+                <View style={{ width: "40%", alignItems: "center"}}>
                     <Text >{item.title}</Text>
                 </View>
-                <View style={{ width: "15%", alignItems: "center" }}>
+                <View style={{ width: "10%", alignItems: "center" }}>
                     <Text>{item.served?"served":"pending"}</Text>
                 </View>
                 <View style={{ width: "10%", alignItems: "center" }}>
@@ -182,15 +191,66 @@ export default function OrderTrack({route}) {
                         color='red'
                         status={removeitem[kotId+index] ? 'checked': 'unchecked'}
                         onPress={() => {
-                            toggleDeleteCheckbox(kotId,index)
+                            toggleCancelCheckbox(kotId,index)
                         }}
                     />
                 </View>
+                <View style={{ width: "10%", alignItems: "center" }}>
+                    <TouchableOpacity onPress={()=>{
+                        // console.log(index, kotId,'sdsdsdsds')
+                        deleteConfirmationModel(kotId, index)
+                        }} >
+                        <MaterialIcons  name="cancel" size={20} color="red" />
+                    </TouchableOpacity>
+                </View>
+
             </View>
         )
     }
     return (
         <>
+             {/* model for delete prompt */}
+             <View>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={deleteModalVisible}
+                    onRequestClose={() => {
+                    setDeleteModalVisible(false);
+                    }}
+                >
+                    <TouchableOpacity 
+                        style={styles.container} 
+                        activeOpacity={1} 
+                        onPressOut={() => {setDeleteModalVisible(false)}}
+                    ></TouchableOpacity>
+                    <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <View>
+                        <Text>Are you sure you want to delete this item?</Text>
+                        </View>
+                        <Pressable
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={()=>toggleDeleteItem(deleteData)}
+                        >
+                        <Text style={styles.textStyle}>Delete</Text>
+                        </Pressable>
+                        <TouchableOpacity
+                            onPress={() => {setDeleteModalVisible(false)}}
+                            style={{
+                                position:'absolute',
+                                right: 20,
+                                top:10,
+                                }}
+                        >
+                            <MaterialIcons name="close" color="#F27405" size={30} />
+                        </TouchableOpacity>
+                    </View>
+                    </View>
+                </Modal>
+            </View>
+            {/* {deleteConfirmation?deleteConfirmationModel:''} */}
+
             {/* Headbar with back and home button */}
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: "10%",marginTop:20 }}>
                 <TouchableOpacity
@@ -218,10 +278,10 @@ export default function OrderTrack({route}) {
                         }}
                          />
                     </View>
-                    <View style={{ width: "45%", backgroundColor: "#F27405", alignItems: "center", height: 35, justifyContent: "center", }}>
+                    <View style={{ width: "40%", backgroundColor: "#F27405", alignItems: "center", height: 35, justifyContent: "center", }}>
                         <Text style={{ color: "white" }}>Items</Text>
                     </View>
-                    <View style={{ width: "15%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
+                    <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" }}>Status</Text>
                     </View>
                     <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
@@ -232,6 +292,9 @@ export default function OrderTrack({route}) {
                     </View>
                     <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
                         <Text style={{ color: "white" }}>Canceled</Text>
+                    </View>
+                    <View style={{ width: "10%", backgroundColor: "#F27405", alignItems: "center", justifyContent: "center", }}>
+                        <Text style={{ color: "white" }}>Delete</Text>
                     </View>
                 </View>
                 <ScrollView>
@@ -284,6 +347,7 @@ export default function OrderTrack({route}) {
                     </View>
                 </View>
                 {/* bottom add and submit */}
+                {/* model for checkout */}
                 <View>
                 <Modal
                     animationType="slide"
@@ -327,6 +391,7 @@ export default function OrderTrack({route}) {
                     </View>
                 </Modal>
                 </View>
+                
                 <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
                     <Button
                         onPress={() => navigation.goBack()}
