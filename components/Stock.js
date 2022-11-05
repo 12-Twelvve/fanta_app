@@ -120,7 +120,7 @@ export default function Stock() {
         })
         // submit post data -->
         getBranch()
-        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'', {
+        fetch('https://fanta-backend12.herokuapp.com/'+branch+'', {
             method: 'POST', // or 'PUT'
             headers: {
             'Content-Type': 'application/json',
@@ -138,8 +138,7 @@ export default function Stock() {
     }
     const fecthData =()=>{
         getBranch()
-        // console.log('http://192.168.1.70:8000/'+branch)
-        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'')
+        fetch('https://fanta-backend12.herokuapp.com/'+branch+'')
         .then((response) => response.json())
         .then((data) =>{
             // console.log("--+--",data.items[0].data)

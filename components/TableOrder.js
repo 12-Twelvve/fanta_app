@@ -30,8 +30,16 @@ export default function TableOrder() {
 
     const navigation = useNavigation();
     const Table = (props) => {
+        const onPressHandler=()=>{
+            const tableState = data.find(table =>table.tableNo == props.no)?true:false
+            if (tableState){
+                navigation.navigate('Track', { num: props.no })
+            }else{
+                navigation.navigate('Menu', { num: props.no })
+            }
+            }
         return (
-            <TouchableOpacity key={props.no} onPress={() => navigation.navigate('Menu', { num: props.no })}>
+            <TouchableOpacity key={props.no} onPress={onPressHandler}>
                 <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"green", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
                     <View style={{ width: 200, height: 90, backgroundColor:'orange', position:'absolute'}}></View>
                     <Text style={{ color: "white", fontSize: 20, fontWeight:"bold" }}>Table No. {props.no}</Text>

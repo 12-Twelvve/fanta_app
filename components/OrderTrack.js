@@ -102,7 +102,7 @@ export default function OrderTrack({route}) {
     }
     const handleCheckoutOrder =()=>{
         getBranch()
-        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'?type=checkout', {
+        fetch('https://fanta-backend12.herokuapp.com/'+branch+'?type=checkout', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export default function OrderTrack({route}) {
     const handleOrder=()=>{
         // console.log("ordertrck87-",ord)
         getBranch()
-        fetch('https://7409-49-126-70-37.in.ngrok.io/'+branch+'', {
+        fetch('https://fanta-backend12.herokuapp.com/'+branch+'', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -137,10 +137,12 @@ export default function OrderTrack({route}) {
     }
     const toggleDeleteItem= (dt)=>{
         dispatch(deleteItem({index:dt.index, kotId:dt.kotId, tableNo:route.params.num}))
+        delete serveCheckBox[dt.kotId+dt.index]
         handleOrder()
         setDeleteModalVisible(false)
     }
     useEffect(()=>{
+        // console.log(serveCheckBox)
         orders?.forEach((kot)=>{
             kot?.items.forEach((item, i)=>{
                 serveCheckBox[kot.kotId+i] = item.served
@@ -394,7 +396,8 @@ export default function OrderTrack({route}) {
                 
                 <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
                     <Button
-                        onPress={() => navigation.goBack()}
+                        // onPress={() => navigation.goBack()}
+                        onPress={() => navigation.navigate('Menu', {num:route.params.num})}
                         buttonStyle={{ backgroundColor: "#F27405", borderRadius: 20, }}
                         title='ADD ITEMS'
                     />

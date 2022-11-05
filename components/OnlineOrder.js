@@ -33,8 +33,16 @@ export default function OnlineOrder() {
     },[])
 
     const Table = (props) => {
+        const onPressHandler=()=>{
+            const tableState = data.find(table =>table.tableNo == props.no)?true:false
+            if (tableState){
+                navigation.navigate('Track', { num: props.no })
+            }else{
+                navigation.navigate('Menu', { num: props.no })
+            }
+            }
         return (
-            <TouchableOpacity onPress={() => navigation.navigate('Menu', { num: props.no })}>
+            <TouchableOpacity onPress={onPressHandler}>
                 <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"#F27405", justifyContent: "center", alignItems: "center", width: 200, height: 200, borderRadius:20 }}>
                 {/* <View style={{ backgroundColor: data.find(table=>table.tableNo == props.no)?"red":"green",  }}> */}
                     <Text style={{ color: "white", fontSize: 20, fontWeight:'bold' }}>{props.no}</Text>
